@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My 3-in-1 App</title>
+
+<style>
+body {
+  font-family: Arial;
+  margin: 0;
+  text-align: center;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  transition: 0.3s;
+}
+
+/* MENU BUTTON */
+.menu-btn {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  width: 55px;
+  height: 55px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  font-size: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+/* MENU */
+.menu {
+  position: fixed;
+  left: -260px;
+  top: 0;
+  width: 260px;
+  height: 100%;
+  background: #222;
+  color: white;
+  padding: 30px 20px;
+  transition: 0.3s;
+  text-align: center;
+}
+
+/* BIG MENU TEXT */
+.menu h3 { font-size: 26px; }
+.menu p { font-size: 20px; margin-top: 25px; }
+
+/* SLIDER */
+.switch {
+  display: block;
+  margin: 15px auto;
+  width: 70px;
+  height: 35px;
+  position: relative;
+}
+.switch input { display: none; }
+
+.slider {
+  position: absolute;
+  background: #ccc;
+  border-radius: 35px;
+  width: 100%;
+  height: 100%;
+}
+.slider:before {
+  content: "";
+  position: absolute;
+  width: 27px;
+  height: 27px;
+  left: 4px;
+  bottom: 4px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+input:checked + .slider { background: #444; }
+input:checked + .slider:before { transform: translateX(35px); }
+
+/* BUTTONS */
+button {
+  width: 90%;
+  max-width: 500px;
+  padding: 18px;
+  font-size: 20px;
+  border-radius: 12px;
+  margin: 10px auto;
+  display: block;
+  cursor: pointer;
+}
+
+/* CARDS */
+.card {
+  display: none;
+  background: white;
+  width: 95%;
+  max-width: 900px;
+  margin: 80px auto;
+  padding: 20px;
+  border-radius: 15px;
+}
+
+/* DARK MODE */
+.dark { background: #121212; color: white; }
+.dark .card { background: #1e1e1e; }
+
+/* CALC GRID */
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+.calc-grid button {
+  width: 100%;
+  padding: 16px;
+  font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+<div id="menu" class="menu">
+  <h3>Menu</h3>
+  <p>🌙 Dark Mode</p>
+  <label class="switch">
+    <input type="checkbox" onchange="toggleTheme()">
+    <span class="slider"></span>
+  </label>
+</div>
+
+<h1>🚀 My 3-in-1 App</h1>
+
+<div>
+  <button onclick="show('calc')">🧮 Calculator</button>
+  <button onclick="show('todo')">📝 To-Do</button>
+  <button onclick="show('quiz')">❓ Quiz</button>
+</div>
+
+<!-- CALCULATOR -->
+<div id="calc" class="card">
+  <input id="calcDisplay" readonly style="width:95%; height:55px; font-size:22px; margin-bottom:12px;">
+  <div class="calc-grid">
+    <button onclick="add('7')">7</button>
+    <button onclick="add('8')">8</button>
+    <button onclick="add('9')">9</button>
+    <button onclick="add('/')">÷</button>
+    <button onclick="add('Math.sqrt(')">√</button>
+
+    <button onclick="add('4')">4</button>
+    <button onclick="add('5')">5</button>
+    <button onclick="add('6')">6</button>
+    <button onclick="add('*')">×</button>
+    <button onclick="add('**')">^</button>
+
+    <button onclick="add('1')">1</button>
+    <button onclick="add('2')">2</button>
+    <button onclick="add('3')">3</button>
+    <button onclick="add('-')">−</button>
+    <button onclick="add('Math.PI')">π</button>
+
+    <button onclick="add('0')">0</button>
+    <button onclick="add('.')">.</button>
+    <button onclick="calculate()">=</button>
+    <button onclick="add('+')">+</button>
+    <button onclick="clearCalc()">C</button>
+
+    <button onclick="add('Math.sin(')">sin</button>
+    <button onclick="add('Math.cos(')">cos</button>
+    <button onclick="add('Math.tan(')">tan</button>
+    <button onclick="add('Math.log(')">log</button>
+    <button onclick="add('Math.exp(')">eˣ</button>
+  </div>
+</div>
+
+<!-- TODO -->
+<div id="todo" class="card">
+  <input id="taskInput" placeholder="Enter task" style="width:90%; padding:14px; font-size:18px;">
+  <button onclick="addTask()">Add Task</button>
+  <ul id="taskList"></ul>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="card">
+  <h2 id="q"></h2>
+  <div id="opts"></div>
+  <p id="res"></p>
+  <button id="restartBtn" onclick="restartQuiz()" style="display:none;">🔄 Restart Quiz</button>
+</div>
+
+<script>
+// MENU
+function toggleMenu(){
+  let m=document.getElementById("menu");
+  m.style.left=(m.style.left==="0px")?"-260px":"0px";
+}
+
+// DARK MODE
+function toggleTheme(){
+  document.body.classList.toggle("dark");
+}
+
+// NAV
+function show(id){
+  document.querySelectorAll(".card").forEach(c=>c.style.display="none");
+  document.getElementById(id).style.display="block";
+}
+
+// CALCULATOR
+function add(v){ calcDisplay.value+=v; }
+function clearCalc(){ calcDisplay.value=""; }
+function calculate(){
+  try{ calcDisplay.value=eval(calcDisplay.value); }
+  catch{ calcDisplay.value="Error"; }
+}
+
+// TODO
+function addTask(){
+  let li=document.createElement("li");
+  li.innerText=taskInput.value;
+  li.onclick=()=>li.remove();
+  taskList.appendChild(li);
+  taskInput.value="";
+}
+
+// QUIZ FIXED
+let qi = 0;
+
+const data = [
+  {q:"Capital of India?",o:["Delhi","Mumbai","Chennai"],a:"Delhi"},
+  {q:"Inventor of telephone?",o:["Alexander Graham Bell","Newton","Edison"],a:"Alexander Graham Bell"},
+  {q:"5 + 3 = ?",o:["6","7","8"],a:"8"}
+];
+
+function loadQ(){
+  if(qi >= data.length){
+    q.innerText = "🎉 Quiz Finished!";
+    opts.innerHTML = "";
+    res.innerText = "";
+    restartBtn.style.display = "block";
+    return;
+  }
+
+  let current = data[qi];
+  q.innerText = current.q;
+  opts.innerHTML = "";
+  res.innerText = "";
+
+  current.o.forEach(op=>{
+    let b=document.createElement("button");
+    b.innerText=op;
+    b.onclick=()=>{
+      if(op === current.a){
+        res.innerText="✅ Correct!";
+      } else {
+        res.innerText="❌ Wrong!";
+      }
+
+      qi++;
+      setTimeout(loadQ, 800);
+    };
+    opts.appendChild(b);
+  });
+}
+
+function restartQuiz(){
+  qi = 0;
+  restartBtn.style.display = "none";
+  loadQ();
+}
+
+loadQ();
+</script>
+
+</body>
+</html>
